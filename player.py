@@ -43,6 +43,9 @@ Para mais informações, verifique o README.md ou consulte um monitor.
 
 CHUTE_DE_NUMERO = "NUMBER"
 CHUTE_DE_REGRA = "RULE"
+parar_busca = False
+testar_sucessor = True
+testar_antecessor = True
 
 def player(number_guesses, rule_guesses):
     #O primeiro chute do programa será 50_000
@@ -50,7 +53,9 @@ def player(number_guesses, rule_guesses):
         return [CHUTE_DE_NUMERO, 50_000]
     
     #O programa irá chegar se o chute não está contido na regra...
-    if not number_guesses[-1][2]:
+    global parar_busca
+
+    if not number_guesses[-1][2] and not parar_busca:
         #...e se não estiver, irá definir um intervalo para fazer uma busca binária
         global gap
 
@@ -58,9 +63,30 @@ def player(number_guesses, rule_guesses):
             gap = 25_000
         else:
             #Divide o intervalo em dois
-            gap/=2
+            gap//=2
 
         if number_guesses[-1][1] == 'menor':
             return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
         else:
             return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+    
+    #Aqui, a busca binária foi feita e encontramos o primeiro elemento que satisfaz a regra
+    else:
+        global testar_sucessor
+        parar_busca = True
+    
+    #Vamos checar se a regra é de intervalos testando o sucessor do nosso primeiro elemento
+    if testar_sucessor:
+        testar_sucessor = False
+        global testar_antecessor
+        return [CHUTE_DE_NUMERO, number_guesses[-1][0]+1]
+    
+    #Para não correr o risco de assumir que a regra não é intervalo e o número for o último do intervalo, testaremos o antecessor
+    if not number_guesses[-1][2] and testar_antecessor:
+        testar_antecessor = False
+        return [CHUTE_DE_NUMERO, number_guesses[-1][0]-2]
+    
+    else:
+        testar_antecessor = False
+    
+    
