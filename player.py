@@ -41,29 +41,26 @@ Você pode implementar outras funções para auxiliar a função `player` e salv
 Para mais informações, verifique o README.md ou consulte um monitor.
 """
 
-import random
-
 CHUTE_DE_NUMERO = "NUMBER"
 CHUTE_DE_REGRA = "RULE"
 
 def player(number_guesses, rule_guesses):
-    """Função principal do jogador. 
+    #O primeiro chute do programa será 50_000
+    if number_guesses == []:
+        return [CHUTE_DE_NUMERO, 50_000]
     
-    Exemplo de estratégia: chutar regras aleatórias.
-    """
-    
-    TIPO = random.choice(["mod", "pot", "int"])
-    
-    if TIPO == "mod":
-        k = random.randint(2, 100)
-        r = random.randint(0, k - 1)
-        chute = [TIPO, k, r]
-    elif TIPO == "pot":
-        p = random.randint(2, 10)
-        chute = [TIPO, p, 0]
-    else:
-        a = random.randint(1, 100_000) # Dica: o underline (_) pode ser usado para melhorar a legibilidade de números grandes em Python!
-        b = random.randint(a, min(100_000, a + 100))
-        chute = [TIPO, a, b]
-    
-    return [CHUTE_DE_REGRA, chute]
+    #O programa irá chegar se o chute não está contido na regra...
+    if not number_guesses[-1][2]:
+        #...e se não estiver, irá definir um intervalo para fazer uma busca binária
+        global gap
+
+        if len(number_guesses) == 1:
+            gap = 25_000
+        else:
+            #Divide o intervalo em dois
+            gap/=2
+
+        if number_guesses[-1][1] == 'menor':
+            return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+        else:
+            return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
