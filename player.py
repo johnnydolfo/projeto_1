@@ -21,9 +21,8 @@ low = -1
 last_right_guess = -1
 last_not_right_guess = -1
 muito_provavelmente_intervalo = False
-
-first = True
-second = True
+could_be_pot = True
+pot = 1
 
 def player(number_guesses, rule_guesses):
     #O primeiro chute do programa será 50_000
@@ -116,17 +115,15 @@ def player(number_guesses, rule_guesses):
         
         if high == -1: #Foi definido por padrão como -1, se não for, achamos o maior número do intervalo
             if first_high_search:
-                #O primeiro chute da busca binária será o número + 50
+                last_not_right_guess = number_from_search+101
+                last_right_guess = number_from_search
                 first_high_search = False
-                gap = 50
+                gap = (last_not_right_guess - last_right_guess)//2
                 print(number_from_search+gap)
                 return [CHUTE_DE_NUMERO, number_from_search+gap]
+            
             else:
                 #Busca dos próximos chutes
-
-                if last_not_right_guess == -1 or last_right_guess == -1:
-                    gap //= 2
-                
                 if gap != 0:
                     if number_guesses[-1][2]:
                         last_right_guess = number_guesses[-1][0]
@@ -152,12 +149,12 @@ def player(number_guesses, rule_guesses):
         
         if low == -1:
             if first_low_search:
+                last_not_right_guess = number_from_search-(100-(high-number_from_search))-1
+                last_right_guess = number_from_search
                 first_low_search = False
-                gap = 100 - (high - number_from_search)
+                gap = (last_right_guess - last_not_right_guess)//2
                 return [CHUTE_DE_NUMERO, number_from_search-gap]
             else:
-                if last_not_right_guess == -1 or last_right_guess == -1:
-                    gap //= 2
                 
                 if gap != 0:
                     if number_guesses[-1][2]:
@@ -178,20 +175,26 @@ def player(number_guesses, rule_guesses):
                         low = number_guesses[-1][0]+1
                     print(low)
         
-        global first, second
-        if first:
-            first = False
-            return [CHUTE_DE_REGRA, ["int", low, high]]
-        elif second:
-            second = False
-            return [CHUTE_DE_REGRA, ["int", low, high-2]]
+        return [CHUTE_DE_REGRA, ["int", low, high]]
 
-        #return [CHUTE_DE_REGRA, ["int", low, high]]
-
-    else:
+    else: #Aqui, não é intervalos
         #Testar se não é o intervalo [n,n]
         global testar_intervalo_unico
         if testar_intervalo_unico:
             testar_intervalo_unico = False
             return [CHUTE_DE_REGRA, ["int", number_from_search, number_from_search]]
+        
+        global could_be_pot
+        if could_be_pot:
+            global pot
+            while pot < 10: #note que não é <= pq o incremento vem antes
+                pot += 1
+
+                raiz = round(number_from_search ** (1/pot))
+
+                if raiz ** pot == number_from_search:
+                    return [CHUTE_DE_REGRA, ["pot", pot, 999]]
+            
+            could_be_pot = False
+        
         
