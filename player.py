@@ -56,9 +56,15 @@ def player(number_guesses, rule_guesses):
                 return [CHUTE_DE_NUMERO, number_guesses[-1][0]+1]
 
         if number_guesses[-1][1] == 'menor':
-            return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+            if number_guesses[-1][0]-gap >= 1:
+                return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+            else:
+                return [CHUTE_DE_NUMERO, 1]
         else:
-            return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+            if number_guesses[-1][0]+gap <= 100000:
+                return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+            else:
+                return [CHUTE_DE_NUMERO, 100000]
     
     #Aqui, a busca binária foi feita e encontramos o primeiro elemento que satisfaz a regra
     else:
@@ -123,7 +129,10 @@ def player(number_guesses, rule_guesses):
                 last_right_guess = number_from_search
                 first_high_search = False
                 gap = (last_not_right_guess - last_right_guess)//2
-                return [CHUTE_DE_NUMERO, number_from_search+gap]
+                if number_from_search+gap <= 100000:
+                    return [CHUTE_DE_NUMERO, number_from_search+gap]
+                else:
+                    return [CHUTE_DE_NUMERO, 100000]
             
             else:
                 #Busca dos próximos chutes
@@ -132,12 +141,18 @@ def player(number_guesses, rule_guesses):
                         last_right_guess = number_guesses[-1][0]
                         if last_not_right_guess != -1 and last_right_guess != -1:
                             gap = (last_not_right_guess - last_right_guess)//2
-                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                        if number_guesses[-1][0]+gap <= 100000:
+                            return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                        else:
+                            return [CHUTE_DE_NUMERO, 100000]
                     else:
                         last_not_right_guess = number_guesses[-1][0]
                         if last_not_right_guess != -1 and last_right_guess != -1:
                             gap = (last_not_right_guess - last_right_guess)//2
-                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                        if number_guesses[-1][0]-gap >= 1:
+                            return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                        else:
+                            return [CHUTE_DE_NUMERO, 1]
                 
                 else:
                     #Se a gap for igual a 0, o número ou vai ser o próprio número, ou o anterior
@@ -152,7 +167,10 @@ def player(number_guesses, rule_guesses):
                 last_right_guess = number_from_search
                 first_low_search = False
                 gap = (last_right_guess - last_not_right_guess)//2
-                return [CHUTE_DE_NUMERO, number_from_search-gap]
+                if number_from_search-gap >= 1:
+                    return [CHUTE_DE_NUMERO, number_from_search-gap]
+                else:
+                    return [CHUTE_DE_NUMERO, 1]
             else:
                 
                 if gap != 0:
@@ -160,12 +178,18 @@ def player(number_guesses, rule_guesses):
                         last_right_guess = number_guesses[-1][0]
                         if last_not_right_guess != -1 and last_right_guess != -1:
                             gap = (last_right_guess - last_not_right_guess)//2
-                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                        if number_guesses[-1][0]-gap >= 1:
+                            return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                        else:
+                            return [CHUTE_DE_NUMERO, 1]
                     else:
                         last_not_right_guess = number_guesses[-1][0]
                         if last_not_right_guess != -1 and last_right_guess != -1:
                             gap = (last_right_guess - last_not_right_guess)//2
-                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                        if number_guesses[-1][0]+gap <= 100000:
+                            return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                        else:
+                            return [CHUTE_DE_NUMERO, 100000]
                 else:
                     #Se a gap for igual a 0, o número ou vai ser o próprio número, ou o próximo
                     if number_guesses[-1][2]:
@@ -207,18 +231,27 @@ def player(number_guesses, rule_guesses):
             first_mod_search = False
             last_high_guess = number_from_search
             gap = 2
-            return [CHUTE_DE_NUMERO, number_from_search-gap]
+            if number_guesses[-1][0]-gap >= 1:
+                return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+            else:
+                return [CHUTE_DE_NUMERO, 1]
 
         elif second_number == -1:
             if last_low_guess == -1:
                 if number_guesses[-1][1] == 'menor' or number_guesses[-1][1] == "igual":
                     last_low_guess = number_guesses[-1][0]
                     gap = (last_high_guess-last_low_guess)/2
-                    return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                    if number_guesses[-1][0]+gap <= 100000:
+                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                    else:
+                        return [CHUTE_DE_NUMERO, 100000]
                 elif number_guesses[-1][1] == 'maior':
                     last_high_guess = number_guesses[-1][0]
                     gap += 1
-                    return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                    if number_guesses[-1][0]-gap >= 1:
+                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                    else:
+                        return [CHUTE_DE_NUMERO, 1]
                 
             else:
                 if number_guesses[-1][1] == 'menor' or number_guesses[-1][1] == "igual":
@@ -229,7 +262,10 @@ def player(number_guesses, rule_guesses):
                         second_number = 2*last_low_guess - number_from_search
                     
                     else:
-                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                        if number_guesses[-1][0]+gap <= 100000:
+                            return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                        else:
+                            return [CHUTE_DE_NUMERO, 100000]
                     
                 elif number_guesses[-1][1] == 'maior':
                     last_high_guess = number_guesses[-1][0]
@@ -239,13 +275,14 @@ def player(number_guesses, rule_guesses):
                         second_number = 2*last_low_guess - number_from_search
 
                     else:
-                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                        if number_guesses[-1][0]-gap >= 1:
+                            return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                        else:
+                            return [CHUTE_DE_NUMERO, 1]
 
         if firstattempt:
             firstattempt = False
-            print(number_from_search, second_number)
             return [CHUTE_DE_REGRA, ["mod", number_from_search-second_number, number_from_search%(number_from_search-second_number)]]
         elif secondattempt:
             secondattempt = False
-            print(number_from_search, second_number)
             return [CHUTE_DE_REGRA, ["mod", number_from_search-second_number-1, number_from_search%(number_from_search-second_number-1)]]
