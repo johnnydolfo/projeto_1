@@ -23,6 +23,11 @@ last_not_right_guess = -1
 muito_provavelmente_intervalo = False
 could_be_pot = True
 pot = 1
+first_mod_search = True
+last_low_guess = -1
+second_number = -1
+firstattempt = True
+secondattempt = True
 
 def player(number_guesses, rule_guesses):
     #O primeiro chute do programa será 50_000
@@ -111,7 +116,6 @@ def player(number_guesses, rule_guesses):
         #Note que se o antecessor foi testado, o sucessor não era parte e, assim, o último elemento do intervalo é o próprio número da busca binária
         if antecessor_testado:
             high = number_from_search
-            print(high)
         
         if high == -1: #Foi definido por padrão como -1, se não for, achamos o maior número do intervalo
             if first_high_search:
@@ -119,7 +123,6 @@ def player(number_guesses, rule_guesses):
                 last_right_guess = number_from_search
                 first_high_search = False
                 gap = (last_not_right_guess - last_right_guess)//2
-                print(number_from_search+gap)
                 return [CHUTE_DE_NUMERO, number_from_search+gap]
             
             else:
@@ -127,13 +130,11 @@ def player(number_guesses, rule_guesses):
                 if gap != 0:
                     if number_guesses[-1][2]:
                         last_right_guess = number_guesses[-1][0]
-                        print(number_guesses[-1][0]+gap)
                         if last_not_right_guess != -1 and last_right_guess != -1:
                             gap = (last_not_right_guess - last_right_guess)//2
                         return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
                     else:
                         last_not_right_guess = number_guesses[-1][0]
-                        print(number_guesses[-1][0]-gap)
                         if last_not_right_guess != -1 and last_right_guess != -1:
                             gap = (last_not_right_guess - last_right_guess)//2
                         return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
@@ -144,8 +145,6 @@ def player(number_guesses, rule_guesses):
                         high = number_guesses[-1][0]
                     else:
                         high = number_guesses[-1][0]-1
-                    print(high)
-                    print(number_guesses[-1][0])
         
         if low == -1:
             if first_low_search:
@@ -173,7 +172,6 @@ def player(number_guesses, rule_guesses):
                         low = number_guesses[-1][0]
                     else:
                         low = number_guesses[-1][0]+1
-                    print(low)
         
         return [CHUTE_DE_REGRA, ["int", low, high]]
 
@@ -197,4 +195,62 @@ def player(number_guesses, rule_guesses):
             
             could_be_pot = False
         
+        #se não é intervalo, nem potência, então é módulo
+        #acharemos o próximo número com a mesma propriedade
+        global first_mod_search
+        global last_high_guess, last_low_guess
+        global second_number
+        global firstattempt, secondattempt
+        global candidate
         
+        if first_mod_search:
+            first_mod_search = False
+            last_high_guess = number_from_search
+            gap = 2
+            return [CHUTE_DE_NUMERO, number_from_search-gap]
+
+        elif second_number == -1:
+            if last_low_guess == -1:
+                if number_guesses[-1][1] == 'menor':
+                    last_low_guess = number_guesses[-1][0]
+                    gap = (last_high_guess-last_low_guess)/2
+                    return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                elif number_guesses[-1][1] == 'maior':
+                    last_high_guess = number_guesses[-1][0]
+                    gap *= 2
+                    return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+                else:
+                    second_number = number_guesses[-1][0]
+                    firstattempt = False
+                    return [CHUTE_DE_REGRA, ["mod", number_from_search-second_number, number_from_search%(number_from_search-second_number)]]
+                
+            else:
+                if number_guesses[-1][1] == 'menor':
+                    last_low_guess = number_guesses[-1][0]
+                    gap = (last_high_guess-last_low_guess)/2
+
+                    if last_high_guess-last_low_guess == 1:
+                        second_number = 2*last_low_guess - number_from_search
+                    
+                    else:
+                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
+                    
+                elif number_guesses[-1][1] == 'maior':
+                    last_high_guess = number_guesses[-1][0]
+                    gap = (last_high_guess-last_low_guess)/2
+
+                    if last_high_guess-last_low_guess == 1:
+                        second_number = 2*last_low_guess - number_from_search
+
+                    else:
+                        return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
+
+        print("found")
+        if firstattempt:
+            firstattempt = False
+            print(number_from_search, second_number)
+            return [CHUTE_DE_REGRA, ["mod", number_from_search-second_number, number_from_search%(number_from_search-second_number)]]
+        elif secondattempt:
+            secondattempt = False
+            print(number_from_search, second_number)
+            return [CHUTE_DE_REGRA, ["mod", number_from_search-second_number-1, number_from_search%(number_from_search-second_number-1)]]
