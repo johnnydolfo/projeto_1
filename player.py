@@ -211,21 +211,17 @@ def player(number_guesses, rule_guesses):
 
         elif second_number == -1:
             if last_low_guess == -1:
-                if number_guesses[-1][1] == 'menor':
+                if number_guesses[-1][1] == 'menor' or number_guesses[-1][1] == "igual":
                     last_low_guess = number_guesses[-1][0]
                     gap = (last_high_guess-last_low_guess)/2
                     return [CHUTE_DE_NUMERO, number_guesses[-1][0]+gap]
                 elif number_guesses[-1][1] == 'maior':
                     last_high_guess = number_guesses[-1][0]
-                    gap *= 2
+                    gap += 1
                     return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
-                else:
-                    second_number = number_guesses[-1][0]
-                    firstattempt = False
-                    return [CHUTE_DE_REGRA, ["mod", number_from_search-second_number, number_from_search%(number_from_search-second_number)]]
                 
             else:
-                if number_guesses[-1][1] == 'menor':
+                if number_guesses[-1][1] == 'menor' or number_guesses[-1][1] == "igual":
                     last_low_guess = number_guesses[-1][0]
                     gap = (last_high_guess-last_low_guess)/2
 
@@ -245,7 +241,6 @@ def player(number_guesses, rule_guesses):
                     else:
                         return [CHUTE_DE_NUMERO, number_guesses[-1][0]-gap]
 
-        print("found")
         if firstattempt:
             firstattempt = False
             print(number_from_search, second_number)
